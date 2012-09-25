@@ -7,6 +7,7 @@ avail = {
 limit = 20
 takenl = ["mask","urn"]
 '''
+# this is the long procedure not using the list comprehension
 def taken(avail, limit, taken):
 	sum = 0
 	for x in takenl:
