@@ -1,6 +1,8 @@
 pybrowser
 =========
 
-a web browser in python.
-basically we make a parser for html and javascript.
-so that we can parse the source of web page...
+a web browser prototype in python
+
+only use python 2.x 
+
+watch us at https://github.com/ashish173/pybrowser.git
