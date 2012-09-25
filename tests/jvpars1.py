@@ -1,25 +1,14 @@
 # Parsing JavaScript Statements
 #
 #
-# In this exercise you will write a Parser for a subset of JavaScript. This
+# In thi we write a Parser for a subset of JavaScript. This
 # will invole writing parsing rewrite rules (i.e., encoding a context-free
 # grammar) and building up a parse tree (also called a syntax tree) of the
 # result. 
 #
-# We have split the parsing of JavaScript into two exercises so that you
-# have a chance to demonstrate your mastery of the concepts independently
-# (i.e., so that you can get one of them right even if the other proves
-# difficult). We could easily make a full JavaScript parser by putting all
-# of the rules together. 
+# 
 #
-# In the first part, we will handle JavaScript elements and statements. The
-# JavaScript tokens we use will be the same ones we defined together in
-# the Homework for Unit 2. (Even if you did not complete Homework 2, the
-# correct tokens will be provided here.) 
-#
-# Let's walk through our JavaScript grammar. We'll describe it somewhat
-# informally in text: your job for this homework problem is to translate
-# this description into a valid parser!
+# In this we will handle JavaScript elements and statements. The 
 # 
 # The starting non-terminal is "js" for "JavaScript program" -- which is
 # just a list of "elements" (to be defined shortly). The parse tree you
@@ -111,39 +100,86 @@ import ply.lex as lex
 import jstokens                 # use our JavaScript lexer
 from jstokens import tokens     # use out JavaScript tokens
 
+#######################################################################################################################
+
 start = 'js'    # the start symbol in our grammar
 
 def p_js(p): 
         'js : element js'
         p[0] = [p[1]] + p[2]
+
 def p_js_empty(p):
         'js : '
         p[0] = [ ]
 
-######################################################################
-# Fill in the rest of the grammar for elements and statements here.
-# This can be done in about 50 lines with 15 grammar rules.
-######################################################################
+def p_element_function(p):
+	'element : FUNTION IDENTIFIER LPAREN optparams RPARENS'
+	p[0]= ("functoin", p[2],p[4],p[6])
 
+def p_element_stmt(p):
+	'element :stmt SEMICOLON'
+	p[0] = ("stmt",p[1])
 
+def p_empty(p):
+	'optparams : '
+	p[0] = []
 
+def p_optparams_param(p):
+	'optparam : params'
+	p[0] = p[1]
 
+def p_params(p):
+	'params : IDENTIFIER COMMA params'
+	p[0] = [p[1]] + p[2]
 
+def p_params_one(p):
+	'params : IDENTIFIER'
+	p[0] = [p[1]]
 
+def p_compound_stmt(p):
+	'compoundstmt : LBRACE stmt RBRACE'
+	p[0] = p[2]
 
+def p_stmt(p):
+	'stmt : stmt COMMA stmt'
+	p[0] = [p[1]] + p[3]
 
+def p_stmt_empty(p):
+	'stmt : '
+	p[0] = []
 
+def p_stmt_if(p):
+	'stmt : IF exp compoundstmt'
+	p[0] = ("if-then", p[2],p[3])
 
-######################################################################
-# done
-######################################################################
+def p_stmt_if_else(p):
+	'stmt : IF exp compoundstmt ELSE compoundstmt'
+	p[0] = ("if-then-else", p[2], p[3], p[5])
 
-# For now, we will assume that there is only one type of expression.
+def p_stmt_assignment(p):
+	'stmt : IDENTIFIER EQUAL exp'	
+	p[0] = ("assign", p[1],p[3])
+
+def p_stmt_return(p):
+	'stmt : RETURN exp'
+	p[0] = ("return", p[2])
+
+def p_stmt_var(p):
+	'stmt : VAR IDENTIFIER EQUAL exp'
+	p[0] = ("var", p[2],a[4])
+
+def p_stmt_exp(p):
+	'stmt : exp'
+	p[0] = ("exp", p[1])
+
+#######################################################################################################################
+
+# we will assume that there is only one type of expression.
 def p_exp_identifier(p): 
         'exp : IDENTIFIER'
         p[0] = ("identifier",p[1]) 
 
-# We have included a few tests. You will likely want to write your own.
+# included a few tests.
 
 jslexer = lex.lex(module=jstokens) 
 jsparser = yacc.yacc() 
