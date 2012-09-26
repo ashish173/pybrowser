@@ -1,25 +1,13 @@
 # Parsing JavaScript Expressions
 #
-# In this exercise you will write a Parser for a subset of JavaScript. This
+# writing a Parser for a subset of JavaScript. This
 # will invole writing parsing rewrite rules (i.e., encoding a context-free
 # grammar) and building up a parse tree (also called a syntax tree) of the
-# result. This question may seem long at first, but it can be answered in a
-# little over 50 lines.
+# resul.
 #
-# We have split the parsing of JavaScript into two exercises so that you
-# have a chance to demonstrate your mastery of the concepts independently
-# (i.e., so that you can get one of them right even if the other proves
-# difficult). We could easily make a full JavaScript parser by putting all
-# of the rules together. 
+# In this second parse, we wil handle JavaScript expressions.
 #
-# In this second parse, we wil handle JavaScript expressions. The
-# JavaScript tokens we use will be the same ones we defined together in the
-# Homework for Unit 2. (Even if you did not complete Homework 2, the
-# correct tokens will be provided here.) 
-#
-# Let's walk through our JavaScript expression grammar. We'll describe it
-# somewhat informally in text: your job for this homework problem is to
-# translate this description into a valid parser!
+#JavaScript expression grammar---->>>>.
 #
 # First, there are a number of "base cases" in our grammar -- simple
 # expressions that are not recursive. In each case, the abstract syntax
@@ -111,9 +99,14 @@ from jstokens import tokens     # use our JavaScript tokens
 start = 'exp'    # we'll start at expression this time
 
 precedence = (
-        # Fill in the precedence and associativity. List the operators
         # in order of _increasing_ precedence (start low, go to high). 
-        
+        ('left', 'OROR'),
+        ('left','ANDAND'),
+        ('left', 'EQUALEQUAL'),
+        ('left', 'LT','LE','GT','GE' ),
+        ('left', 'PLUS', 'MINUS'),
+        ('left', 'TIMES', 'DIVIDE','MOD'),
+	('right', 'NOT'),
 ) 
 
 # Here's the rules for simple expressions.
@@ -145,6 +138,47 @@ def p_exp_parens(p):
     'exp : LPAREN exp RPAREN'
     p[0] = p[2]
 
+def p_args(p):
+	'args : exp COMMA args'
+	p[0] = [p[1]] + p[3]
+
+def p_args_one(p):
+	'args : exp'
+	p[0] = [p[1]]
+
+def p_exp_call(p):
+	'exp : IDENTIFIER LPAREN optargs RPAREN'
+	p[0] = ("call" , p[1] , p[3])
+
+def p_optargs(p):
+	'optargs : args'
+	p[0] = a[1]
+
+def p_optargs_empty(p):
+	'optargs : '
+	p[0] = []
+
+
+
+# writing grammer for binary operations
+
+def p_exp_binop(p):
+	''' exp : exp PLUS exp
+		| exp MINUS exp
+		| exp TIMES exp
+		| exp MOD exp
+		| exp DIVIDE exp
+		| exp EQUALEQUAL exp
+		| exp LE exp	
+		| exp LT exp
+		| exp GE exp
+		| exp GT exp
+		| exp ANDAND exp
+		| exp OROR exp'''
+	p[0] = ("binop" , p[1],p[2],p[3])
+
+	
+
 # This is what the rule for anonymous functions would look like, but since
 # they involve statements they are not part of this assignment. Leave this
 # commented out, but feel free to use it as a hint.
@@ -152,28 +186,6 @@ def p_exp_parens(p):
 ## def p_exp_lambda(p):
 ##         'exp : FUNCTION LPAREN optparams RPAREN compoundstmt'  
 ##         p[0] = ("function",p[3],p[5])
-
-######################################################################
-# Fill in the rest of the grammar for expressions.
-#
-# This can be done in about 50 lines using about 12 p_Something()
-# definitions. Remember that you can save time by lumping the binary
-# operator rules together. 
-######################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
