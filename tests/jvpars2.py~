@@ -106,7 +106,7 @@ precedence = (
         ('left', 'LT','LE','GT','GE' ),
         ('left', 'PLUS', 'MINUS'),
         ('left', 'TIMES', 'DIVIDE','MOD'),
-		('right', 'NOT'),
+	('right', 'NOT'),
 ) 
 
 # Here's the rules for simple expressions.
